@@ -1,0 +1,40 @@
+# Footage and generated media
+*.mp4
+*.MP4
+*.mov
+*.MOV
+*.insv
+*.LRV
+*.THM
+*.360
+*.mkv
+
+# Model weights and caches
+models/
+*.safetensors
+*.gguf
+*.pt
+*.onnx
+
+# Working data
+work/
+cache/
+output/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Local configuration
+.env
+*.local.toml
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

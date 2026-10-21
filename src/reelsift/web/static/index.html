@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reelsift review</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="bar">
+    <div class="title">
+      <h1 id="trip-name">Reelsift</h1>
+      <span id="trip-sub" class="muted"></span>
+    </div>
+    <nav id="tabs" class="tabs" aria-label="Edit length"></nav>
+    <div class="actions">
+      <button id="undo" title="Undo the last keep, drop or add">Undo</button>
+      <button id="reselect" title="Choose a fresh edit; your decisions are kept">Select again</button>
+      <button id="refill" title="Fill up to the target length without changing current clips">Refill</button>
+      <button id="approve" class="primary">Approve</button>
+    </div>
+  </header>
+
+  <section class="status">
+    <div class="meter" aria-label="Edit length">
+      <div id="meter-fill"></div>
+    </div>
+    <span id="meter-text"></span>
+    <select id="revisions" aria-label="Revisions"></select>
+    <span id="approved" class="badge" hidden>Approved</span>
+    <span class="spacer"></span>
+    <label class="toggle"><input type="checkbox" id="show-crop"> 9:16 framing</label>
+    <button id="render-h">Render 16:9</button>
+    <button id="render-v">Render 9:16</button>
+    <button id="export" title="Timeline for DaVinci Resolve and other editors">Export timeline</button>
+    <span id="render-state" class="muted"></span>
+  </section>
+
+  <main class="layout">
+    <section>
+      <div id="ride" class="ride" hidden>
+        <div class="ride-head">
+          <h2>Ride</h2>
+          <span class="muted">The whole trip from one camera, in order: stops cut out, the rest sped up.</span>
+        </div>
+        <div class="ride-controls">
+          <label>Speed <select id="ride-speed" aria-label="Speed"></select></label>
+          <label id="ride-target-box">Length <input id="ride-target" type="text" placeholder="4:00" aria-label="Length (minutes:seconds)"></label>
+          <label>Camera <select id="ride-camera" aria-label="Camera"></select></label>
+          <label class="toggle"><input type="checkbox" id="ride-keep-unknown" checked> Keep footage whose movement isn't clear</label>
+          <button id="ride-build" class="primary">Build the ride</button>
+          <span id="ride-job" class="muted"></span>
+        </div>
+        <div id="ride-summary" class="muted"></div>
+        <ol id="ride-stretches" class="ride-list"></ol>
+        <details id="ride-stops-box">
+          <summary>Stops cut out (<span id="ride-stop-count">0</span>)</summary>
+          <ol id="ride-stops" class="ride-list"></ol>
+        </details>
+      </div>
+      <div id="suggest" class="suggest" hidden>
+        <div class="suggest-head">
+          <strong>Replacements for the dropped clip</strong>
+          <button id="suggest-close" class="link">Close</button>
+        </div>
+        <div id="suggest-list" class="grid small"></div>
+      </div>
+      <div id="board" class="grid"></div>
+    </section>
+
+    <aside class="side">
+      <div class="prefs">
+        <div class="prefs-head">
+          <h2 id="pref-title">What you want in this edit</h2>
+          <select id="pref-style" aria-label="Style of this edit" title="A preview gathers the best moments; a story covers the day from start to finish"></select>
+        </div>
+        <textarea id="pref-text" rows="4" placeholder="For example: more views and the kids playing, less plain road and fewer stops, find the red bridge"></textarea>
+        <div class="prefs-bar">
+          <button id="pref-apply" class="primary">Apply</button>
+          <button id="pref-draft" title="Write this edit's description again from your footage">Suggest again</button>
+          <span id="pref-engine" class="muted"></span>
+        </div>
+        <div class="clip-len">
+          <span class="muted">Clips from</span>
+          <input id="clip-min" type="number" min="0.5" max="120" step="0.5" aria-label="Shortest clip in seconds">
+          <span class="muted">to</span>
+          <input id="clip-max" type="number" min="0.5" max="120" step="0.5" aria-label="Longest clip in seconds">
+          <span class="muted">s</span>
+          <button id="clip-apply" title="Re-select this edit with these clip lengths; leave both empty for automatic">Set</button>
+        </div>
+        <ul id="pref-lines" class="lines"></ul>
+        <details id="pref-details">
+          <summary>Adjust</summary>
+          <div id="pref-sliders" class="sliders"></div>
+          <div class="prefs-add">
+            <select id="pref-add-feature" aria-label="Add a setting"></select>
+            <input id="pref-add-search" type="text" placeholder="Look for… (e.g. red bridge)">
+            <button id="pref-add-search-btn">Add</button>
+          </div>
+          <button id="pref-sliders-apply">Apply adjustments</button>
+        </details>
+      </div>
+      <div class="music-panel">
+        <div class="prefs-head">
+          <h2>Music</h2>
+          <select id="music-source" aria-label="Music under this edit">
+            <option value="none">No music</option>
+            <option value="files">My music files</option>
+            <option value="generated">Generated</option>
+          </select>
+        </div>
+        <div id="music-files" class="muted"></div>
+        <div id="music-gen">
+          <div class="music-ask">
+            <input id="music-genre" list="music-genres" type="text" placeholder="Genre, e.g. melodic techno" aria-label="Genre">
+            <datalist id="music-genres"></datalist>
+            <input id="music-mood" type="text" placeholder="Mood, e.g. sunny, epic" aria-label="Mood">
+          </div>
+          <div class="prefs-bar">
+            <button id="music-generate" class="primary" title="Make two tracks for this edit; the one that fits it best plays">Generate</button>
+            <button id="music-more" title="Make one more track with the same settings">Try another</button>
+            <button id="music-cancel" hidden>Cancel</button>
+            <span id="music-job" class="muted"></span>
+          </div>
+          <div id="music-tracks" class="tracks"></div>
+        </div>
+        <div id="music-mix" class="sliders">
+          <div class="mix-row"><label for="mix-music">Music volume</label>
+            <input id="mix-music" type="range" min="-60" max="6" step="0.1"><output id="mix-music-v"></output></div>
+          <div class="mix-row"><label for="mix-sound">Clip sound</label>
+            <input id="mix-sound" type="range" min="-60" max="6" step="0.5"><output id="mix-sound-v"></output></div>
+          <div class="mix-row"><label for="mix-background">Clip sound under music</label>
+            <input id="mix-background" type="range" min="-30" max="0" step="0.1"><output id="mix-background-v"></output></div>
+          <div class="mix-row"><label for="mix-duck">Music drop when people speak</label>
+            <input id="mix-duck" type="range" min="-30" max="0" step="0.1"><output id="mix-duck-v"></output></div>
+          <div class="prefs-bar">
+            <button id="mix-reset" class="link">Default levels</button>
+            <span class="spacer"></span>
+            <button id="music-fit" title="Move cuts onto the music's beats (a new revision; never inside a word)">Fit cuts to the beat</button>
+            <button id="music-preview" title="A small, quick render of this edit with its music">Preview with music</button>
+          </div>
+        </div>
+      </div>
+      <div class="player">
+        <div class="screen">
+          <video id="video" controls preload="metadata" playsinline></video>
+          <img id="still" alt="" hidden>
+        </div>
+        <div class="player-bar">
+          <button id="play-all" class="primary">Play whole edit</button>
+          <span id="now-playing" class="muted"></span>
+        </div>
+      </div>
+      <div class="browser">
+        <div class="browser-head">
+          <h2>Not in the edit</h2>
+          <select id="filter-recording" aria-label="Recording"></select>
+        </div>
+        <div id="pool" class="list"></div>
+        <button id="pool-more" class="link">Show more</button>
+      </div>
+    </aside>
+  </main>
+
+  <template id="card">
+    <article class="card">
+      <button class="thumb" title="Preview"><img alt="" loading="lazy"><span class="crop-window" hidden></span><span class="dur"></span></button>
+      <input class="crop" type="range" min="0" max="1" step="0.01" aria-label="Crop position" hidden>
+      <div class="meta">
+        <div class="when"></div>
+        <div class="cam muted"></div>
+        <div class="why"></div>
+      </div>
+      <div class="tools">
+        <button class="keep" title="Lock this clip so re-selecting keeps it">Keep</button>
+        <button class="drop" title="Remove from this edit">Drop</button>
+        <button class="drop-all link" title="Remove from every edit length">everywhere</button>
+        <span class="trim">
+          <button data-trim="start,-0.5" title="Start earlier">◀</button>
+          <button data-trim="start,0.5" title="Start later">▶</button>
+          <span class="muted">trim</span>
+          <button data-trim="end,-0.5" title="End earlier">◀</button>
+          <button data-trim="end,0.5" title="End later">▶</button>
+        </span>
+      </div>
+    </article>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>

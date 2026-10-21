@@ -1,0 +1,56 @@
+Reelsift
+Copyright 2026 The Reelsift Authors
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+Reelsift does not include or redistribute any model weights, FFmpeg, or third-party
+libraries. They are downloaded or installed separately, each under its own license, which
+applies to your use of them.
+
+Models downloaded by `reelsift models pull`, by preset
+------------------------------------------------------
+
+  Qwen/Qwen3-VL-8B-Instruct (large)            Apache-2.0
+  Qwen/Qwen3-VL-4B-Instruct (medium)           Apache-2.0
+  Qwen/Qwen3-VL-2B-Instruct (small)            Apache-2.0
+  google/siglip2-so400m-patch14-384 (large, medium)       Apache-2.0
+  google/siglip2-base-patch16-224 (small, cpu)            Apache-2.0
+  mobiuslabsgmbh/faster-whisper-large-v3-turbo (large, medium, small)
+                                               MIT (OpenAI Whisper large-v3-turbo weights)
+  Systran/faster-whisper-small (cpu)           MIT (OpenAI Whisper small weights)
+
+Each model's license is shown before it is downloaded; check its model card for terms.
+
+Required software installed by you
+----------------------------------
+
+  FFmpeg and ffprobe        LGPL-2.1+ or GPL-2.0+, depending on the build you install
+
+Main Python dependencies
+------------------------
+
+  typer                     MIT
+  platformdirs              MIT
+  tomli-w                   MIT
+  numpy                     BSD-3-Clause (with bundled MIT, Zlib, 0BSD, CC0 parts)
+  pillow                    MIT-CMU
+  pillow-heif               BSD-3-Clause (its binary wheels include libheif and libde265,
+                            LGPL-3.0, and the x265 encoder, GPL-2.0; Reelsift only decodes)
+  huggingface-hub           Apache-2.0
+  opencv-python-headless    Apache-2.0
+  fastapi                   MIT
+  uvicorn                   BSD-3-Clause
+  opentimelineio            Apache-2.0
+
+Optional "ml" extra
+-------------------
+
+  torch, torchvision        BSD-3-Clause and others (see the PyTorch distribution)
+  transformers, accelerate  Apache-2.0
+  faster-whisper            MIT
+  ctranslate2               MIT
+  nvidia-cublas-cu12, nvidia-cudnn-cu12
+                            NVIDIA proprietary license (NVIDIA Software License Agreement),
+                            downloaded from PyPI when you install the extra
+
+The complete list of dependencies and their versions is in uv.lock.

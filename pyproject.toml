@@ -1,0 +1,88 @@
+[project]
+name = "reelsift"
+version = "0.1.0"
+description = "Turn hours of personal footage into short highlight edits with local models"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.12,<3.13"
+keywords = ["video", "highlights", "editing", "ffmpeg", "local-ai"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Environment :: GPU :: NVIDIA CUDA",
+    "Intended Audience :: End Users/Desktop",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Multimedia :: Video :: Non-Linear Editor",
+]
+dependencies = [
+    "typer>=0.27",
+    "platformdirs>=4.13",
+    "tomli-w>=1.2",
+    "numpy>=2",
+    "pillow>=11",
+    "huggingface-hub>=2.2",
+    "opencv-python-headless>=5.0",
+    "fastapi>=0.149",
+    "uvicorn>=0.54",
+    "opentimelineio>=0.18",
+    "pillow-heif>=1.0",
+]
+
+[project.optional-dependencies]
+# Models for analysis. Installed separately because PyTorch needs the build for your GPU.
+ml = [
+    "torch==2.14.1",
+    "torchvision==0.29.1",
+    "transformers==5.20.2",
+    "accelerate==1.15.0",
+    "faster-whisper==1.2.1",
+    # CTranslate2 (faster-whisper) is built for CUDA 12, while torch uses CUDA 13.
+    "nvidia-cublas-cu12==12.9.2.10; sys_platform != 'darwin'",
+    "nvidia-cudnn-cu12==9.27.0.42; sys_platform != 'darwin'",
+]
+
+[project.urls]
+Homepage = "https://github.com/hexkDotCom/reelsift"
+Issues = "https://github.com/hexkDotCom/reelsift/issues"
+Changelog = "https://github.com/hexkDotCom/reelsift/blob/main/CHANGELOG.md"
+
+[project.scripts]
+reelsift = "reelsift.cli:main"
+
+[build-system]
+requires = ["hatchling>=1.32"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = ["ruff>=0.17", "pytest>=9.1", "httpx>=0.28"]
+
+[tool.uv]
+python-preference = "only-managed"
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu130" }
+torchvision = { index = "pytorch-cu130" }
+
+[[tool.uv.index]]
+name = "pytorch-cu130"
+url = "https://download.pytorch.org/whl/cu130"
+explicit = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "RUF"]
+# The formatter handles line length; long strings and SQL are left intact.
+ignore = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["reelsift"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
